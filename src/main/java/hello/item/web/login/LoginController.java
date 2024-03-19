@@ -2,10 +2,12 @@ package hello.item.web.login;
 
 import hello.item.domain.login.LoginService;
 import hello.item.domain.member.Member;
+import hello.item.web.SessionConst;
 import hello.item.web.session.SessionManager;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -53,8 +55,32 @@ public class LoginController {
 //        return "redirect:/";
 //    }
 
+//    @PostMapping("/login")
+//    public String loginV2(@Validated @ModelAttribute("loginForm") LoginForm loginForm, BindingResult bindingResult, HttpServletResponse response) {
+//        if (bindingResult.hasErrors()) {
+//            return "login/loginForm";
+//        }
+//
+//        Member loginMember = loginService.login(loginForm.getLoginId(), loginForm.getPassword());
+//
+//        log.info("login? = {}", loginMember);
+//
+//        if (loginMember == null) {
+//            bindingResult.reject("loginFail", "아이디 또는 비밀번호가 맞지 않습니다.");
+//            return "login/loginForm";
+//        }
+//
+//        /**
+//         * 로그인 성공 처리
+//         * 세션 관리자를 통해 세션을 생성하고, 회원 데이터 보관(브라우저 종료시 모두 종료)
+//         */
+//        sessionManager.createSession(loginMember, response);
+//
+//        return "redirect:/";
+//    }
+
     @PostMapping("/login")
-    public String loginV2(@Validated @ModelAttribute("loginForm") LoginForm loginForm, BindingResult bindingResult, HttpServletResponse response) {
+    public String loginV3(@Validated @ModelAttribute("loginForm") LoginForm loginForm, BindingResult bindingResult, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             return "login/loginForm";
         }
@@ -70,9 +96,11 @@ public class LoginController {
 
         /**
          * 로그인 성공 처리
-         * 세션 관리자를 통해 세션을 생성하고, 회원 데이터 보관(브라우저 종료시 모두 종료)
+         * 세션이 존재하면 세션 반환, 없으면 신규 세션 생성 반환
+         * 세션에 로그인 회원 정보 보관
          */
-        sessionManager.createSession(loginMember, response);
+        HttpSession session = request.getSession();
+        session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
 
         return "redirect:/";
     }
@@ -83,9 +111,20 @@ public class LoginController {
 //        return "redirect:/";
 //    }
 
+//    @PostMapping("/logout")
+//    public String logoutV2(HttpServletRequest request) {
+//        sessionManager.expire(request);
+//        return "redirect:/";
+//    }
+
     @PostMapping("/logout")
-    public String logoutV2(HttpServletRequest request) {
-        sessionManager.expire(request);
+    public String logoutV3(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+
+        if (session != null) {
+            session.invalidate();
+        }
+
         return "redirect:/";
     }
 
