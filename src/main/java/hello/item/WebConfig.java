@@ -1,11 +1,7 @@
 package hello.item;
 
-import hello.item.web.filter.LogFilter;
-import hello.item.web.filter.LoginCheckFilter;
 import hello.item.web.interceptor.LogInterceptor;
-import jakarta.servlet.Filter;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.context.annotation.Bean;
+import hello.item.web.interceptor.LoginCheckInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -21,14 +17,14 @@ public class WebConfig implements WebMvcConfigurer {
 //        return filterFilterRegistrationBean;
 //    }
 
-    @Bean
-    public FilterRegistrationBean loginCheckFilter() {
-        FilterRegistrationBean<Filter> filterFilterRegistrationBean = new FilterRegistrationBean<>();
-        filterFilterRegistrationBean.setFilter(new LoginCheckFilter());
-        filterFilterRegistrationBean.setOrder(2);
-        filterFilterRegistrationBean.addUrlPatterns("/*");
-        return filterFilterRegistrationBean;
-    }
+//    @Bean
+//    public FilterRegistrationBean loginCheckFilter() {
+//        FilterRegistrationBean<Filter> filterFilterRegistrationBean = new FilterRegistrationBean<>();
+//        filterFilterRegistrationBean.setFilter(new LoginCheckFilter());
+//        filterFilterRegistrationBean.setOrder(2);
+//        filterFilterRegistrationBean.addUrlPatterns("/*");
+//        return filterFilterRegistrationBean;
+//    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -36,5 +32,10 @@ public class WebConfig implements WebMvcConfigurer {
                 .order(1)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/css/**", "/*.ico", "/error");
+
+        registry.addInterceptor(new LoginCheckInterceptor())
+                .order(2)
+                .addPathPatterns("/**")
+                .excludePathPatterns("/", "/members/add", "/login", "/logout", "/css/**", "/*.ico", "/error");
     }
 }
