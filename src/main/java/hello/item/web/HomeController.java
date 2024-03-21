@@ -1,7 +1,7 @@
 package hello.item.web;
 
 import hello.item.domain.member.Member;
-import hello.item.web.session.SessionManager;
+import hello.item.web.argumentresolver.Login;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 @RequiredArgsConstructor
 public class HomeController {
 //    private final MemberRepository memberRepository;
-    private final SessionManager sessionManager;
+//    private final SessionManager sessionManager;
 
 //    @GetMapping("/")
 //    public String home() {
@@ -71,8 +71,19 @@ public class HomeController {
 //        return "loginHome";
 //    }
 
+//    @GetMapping("/")
+//    public String homeLoginV3Spring(@SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member member, Model model) {
+//        if (member == null) {
+//            return "home";
+//        }
+//
+//        model.addAttribute("member", member);
+//
+//        return "loginHome";
+//    }
+
     @GetMapping("/")
-    public String homeLoginV3Spring(@SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member member, Model model) {
+    public String homeLoginV3ArgumentResolver(@Login Member member, Model model) {
         if (member == null) {
             return "home";
         }
